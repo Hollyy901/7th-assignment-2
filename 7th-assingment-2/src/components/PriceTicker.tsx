@@ -7,13 +7,19 @@ export default function PriceTicker() {
   const [products, setProducts] = useState<Product[]>([]);
 
   useEffect(() => {
-    fetch(" https://openapi.programming-hero.com/api/bazardor")
+    fetch("https://openapi.programming-hero.com/api/bazardor/products")
       .then((res) => res.json())
-      .then((data) => setProducts(data))
-      .catch((err) => console.error("Ticker error:", err));
+      .then((data) => {
+        const productList = Array.isArray(data) ? data : data?.data || [];
+        setProducts(productList);
+      })
+      .catch((err) => {
+        console.error("Ticker error:", err);
+        setProducts([]);
+      });
   }, []);
 
-  if (products.length === 0) return null;
+  if (!Array.isArray(products) || products.length === 0) return null;
 
   const unitMap: Record<string, string> = {
     kg: "কেজি",
@@ -22,7 +28,6 @@ export default function PriceTicker() {
     piece: "পিস",
   };
 
-  // দুইবার repeat করি smooth infinite scroll এর জন্য
   const tickerItems = [...products, ...products];
 
   return (
@@ -30,7 +35,7 @@ export default function PriceTicker() {
       <div className="animate-marquee whitespace-nowrap py-1.5 flex">
         {tickerItems.map((product, index) => (
           <span
-            key={`${index}`}
+            key={`${product.slug || product.id}-${index}`}
             className="inline-flex items-center gap-1.5 mx-4 text-sm"
           >
             <span>{product.image}</span>
@@ -40,16 +45,16 @@ export default function PriceTicker() {
             </span>
             <span
               className={`font-semibold ${
-                product.change.dir === "up"
+                product.change?.dir === "up"
                   ? "text-red-500"
-                  : product.change.dir === "down"
+                  : product.change?.dir === "down"
                   ? "text-green-500"
                   : "text-gray-400"
               }`}
             >
-              {product.change.dir === "up"
+              {product.change?.dir === "up"
                 ? `▲ ${toBengaliNumber(Math.abs(product.change.pct).toFixed(1))}%`
-                : product.change.dir === "down"
+                : product.change?.dir === "down"
                 ? `▼ ${toBengaliNumber(Math.abs(product.change.pct).toFixed(1))}%`
                 : `— ${toBengaliNumber("0.0")}%`}
             </span>

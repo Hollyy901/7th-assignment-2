@@ -16,10 +16,17 @@ export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
-    fetch("https://api.api-store.workers.dev/api/bazardor/categories")
+    fetch("https://openapi.programming-hero.com/api/bazardor/categories")
       .then((res) => res.json())
-      .then((data) => setCategories(data))
-      .catch((err) => console.error("Error fetching categories:", err));
+      .then((data) => {
+        // Some APIs wrap responses inside a data property (e.g. data.data or direct array)
+        const categoryList = Array.isArray(data) ? data : data?.data || [];
+        setCategories(categoryList);
+      })
+      .catch((err) => {
+        console.error("Error fetching categories:", err);
+        setCategories([]);
+      });
   }, []);
 
   const handleSignOut = async () => {
@@ -35,9 +42,7 @@ export default function Navbar() {
 
   return (
     <header className="sticky top-0 z-50 bg-white shadow-sm">
-      {/* Top Row: Logo + Auth */}
       <div className="max-w-7xl mx-auto px-4 py-2 flex items-center justify-between">
-        {/* Logo */}
         <Link href="/" className="flex items-center gap-2">
           <span className="text-2xl">🛒</span>
           <div>
@@ -48,7 +53,6 @@ export default function Navbar() {
           </div>
         </Link>
 
-        {/* Mobile Menu Toggle */}
         <button
           className="lg:hidden btn btn-ghost btn-sm"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -58,17 +62,12 @@ export default function Navbar() {
           </svg>
         </button>
 
-        {/* Auth Buttons (Desktop) */}
         <div className="hidden lg:flex items-center gap-2">
           {isPending ? (
             <span className="loading loading-spinner loading-sm"></span>
           ) : session ? (
             <div className="dropdown dropdown-end">
-              <div
-                tabIndex={0}
-                role="button"
-                className="btn btn-ghost btn-sm gap-2"
-              >
+              <div tabIndex={0} role="button" className="btn btn-ghost btn-sm gap-2">
                 <div className="avatar placeholder">
                   <div className="bg-green-100 text-green-700 rounded-full w-8">
                     <span className="text-sm">
@@ -77,45 +76,26 @@ export default function Navbar() {
                   </div>
                 </div>
                 <span>{session.user.name}</span>
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
-                </svg>
               </div>
-              <ul
-                tabIndex={0}
-                className="dropdown-content menu bg-white rounded-box shadow-lg z-[1] w-52 p-2"
-              >
-                <li>
-                  <Link href="/profile">
-                    <span>👤</span> আমার প্রোফাইল
-                  </Link>
-                </li>
-                <li>
-                  <button onClick={handleSignOut}>
-                    <span>🚪</span> সাইন আউট
-                  </button>
-                </li>
+              <ul tabIndex={0} className="dropdown-content menu bg-white rounded-box shadow-lg z-[1] w-52 p-2">
+                <li><Link href="/profile"><span>👤</span> আমার প্রোফাইল</Link></li>
+                <li><button onClick={handleSignOut}><span>🚪</span> সাইন আউট</button></li>
               </ul>
             </div>
           ) : (
             <>
-              <Link href="/signin" className="btn btn-sm btn-outline btn-success">
-                সাইন ইন
-              </Link>
-              <Link href="/signup" className="btn btn-sm btn-success text-white">
-                সাইন আপ
-              </Link>
+              <Link href="/signin" className="btn btn-sm btn-outline btn-success">সাইন ইন</Link>
+              <Link href="/signup" className="btn btn-sm btn-success text-white">সাইন আপ</Link>
             </>
           )}
         </div>
       </div>
 
-      {/* Category Links Row */}
       <div className="border-t border-gray-100">
         <div className="max-w-7xl mx-auto px-4">
           <nav className={`${mobileMenuOpen ? "block" : "hidden"} lg:block`}>
             <ul className="flex flex-wrap items-center gap-1 py-2">
-              {categories.map((cat) => {
+              {Array.isArray(categories) && categories.map((cat) => {
                 const isActive = pathname === `/category/${cat.slug}`;
                 return (
                   <li key={cat.slug}>
@@ -135,26 +115,17 @@ export default function Navbar() {
                 );
               })}
 
-              {/* Mobile Auth buttons */}
               {mobileMenuOpen && (
                 <li className="w-full mt-2 flex gap-2 lg:hidden">
                   {session ? (
                     <>
-                      <Link href="/profile" className="btn btn-sm btn-outline btn-success flex-1">
-                        প্রোফাইল
-                      </Link>
-                      <button onClick={handleSignOut} className="btn btn-sm btn-error text-white flex-1">
-                        সাইন আউট
-                      </button>
+                      <Link href="/profile" className="btn btn-sm btn-outline btn-success flex-1">প্রোফাইল</Link>
+                      <button onClick={handleSignOut} className="btn btn-sm btn-error text-white flex-1">সাইন আউট</button>
                     </>
                   ) : (
                     <>
-                      <Link href="/signin" className="btn btn-sm btn-outline btn-success flex-1">
-                        সাইন ইন
-                      </Link>
-                      <Link href="/signup" className="btn btn-sm btn-success text-white flex-1">
-                        সাইন আপ
-                      </Link>
+                      <Link href="/signin" className="btn btn-sm btn-outline btn-success flex-1">সাইন ইন</Link>
+                      <Link href="/signup" className="btn btn-sm btn-success text-white flex-1">সাইন আপ</Link>
                     </>
                   )}
                 </li>
@@ -164,7 +135,6 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Price Ticker */}
       <PriceTicker />
     </header>
   );
