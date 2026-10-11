@@ -15,7 +15,7 @@ export default function PriceFallers({ products }: { products: Product[] }) {
     <section className="py-8 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4">
         <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
-          <span className="text-green-500">▼</span> আজ দাম কমেছে
+          <span className="text-green-500">▼</span> আজ দাম কমেছে.
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {fallers.map((product) => (
