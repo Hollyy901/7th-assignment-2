@@ -24,7 +24,7 @@ export default function PriceTicker() {
   const unitMap: Record<string, string> = {
     kg: "কেজি",
     litre: "লিটার",
-    dozen: "ডজন",
+    dozen: "ডজন.",
     piece: "পিস",
   };
 
