@@ -23,7 +23,7 @@ export default function ProductCard({ product }: { product: Product }) {
     
         <div className="flex items-end justify-between mt-auto">
           <div>
-            <p className="text-xs text-gray-400">আজকের দাম</p>
+            <p className="text-xs text-gray-400">আজকের দাম.</p>
             <p className="text-lg font-bold text-gray-800">
               {formatPrice(product.today)} <span className="text-sm font-normal">টাকা</span>
             </p>
